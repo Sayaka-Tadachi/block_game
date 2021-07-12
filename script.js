@@ -12,8 +12,8 @@ const BLOCK_SIZE = 30;
 const SCREEN_W = 640;
 const SCREEN_H = BLOCK_SIZE * FIELD_ROW;
 
-//tetromino size
-const TETRO_SIZE = 4;
+//parts size
+const PAR_SIZE = 4;
 
 
 let can = document.getElementById("can");
@@ -23,7 +23,7 @@ let con = can.getContext("2d");
 can.width = SCREEN_W;
 can.height = SCREEN_H;
 can.style.border = "4px solid #555";
-const TETRO_COLORS = [
+const PAR_COLORS = [
   "#fff",
   "#92B4D1",
   "#ACE2D0",
@@ -35,8 +35,8 @@ const TETRO_COLORS = [
 ];
 
 
-//tetromino body
-const TETRO_TYPES = [
+//parts body
+const PAR_TYPES = [
   [], //empty
     [ //I
       [0, 0, 0, 0],
@@ -89,20 +89,20 @@ bgimage.src ="background.png";
 
 
 //initial position
-const START_X = FIELD_COL/2 - TETRO_SIZE/2;
+const START_X = FIELD_COL/2 - PAR_SIZE/2;
 const START_Y = 0;
 
-let tetro;
+let par;
 
-//tetromino map
-let tetro_x = START_X;
-let tetro_y = START_Y;
+//parts map
+let par_x = START_X;
+let par_y = START_Y;
 
-//tetromino shapes
-let tetro_t;
+//parts shapes
+let par_t;
 
-//tetro next
-let tetro_n;
+//parts next
+let par_n;
 
 //field
 let field = [];
@@ -121,7 +121,7 @@ const OFFSET_Y = 20;
 
 init();
 //drawAll();
-//setInterval(dropTetro, GAME_SPEED)
+//setInterval(dropPar, GAME_SPEED)
 
 //initialize
 function init(){
@@ -134,32 +134,29 @@ function init(){
   }
   //Test:To check field is working -> field[5][0]=1;
 
-  tetro_n = Math.floor(Math.random() * (TETRO_TYPES.length-1))+1;
+  par_n = Math.floor(Math.random() * (PAR_TYPES.length-1))+1;
 
-  setTetro();
+  setPar();
   drawAll();
-  setInterval(dropTetro, GAME_SPEED);
+  setInterval(dropPar, GAME_SPEED);
 
 }
 
-function setTetro(){
-  tetro_t = tetro_n;
-  tetro = TETRO_TYPES[tetro_t];
-  tetro_n = Math.floor(Math.random() * (TETRO_TYPES.length-1))+1;
+function setPar(){
+  par_t = par_n;
+  par = PAR_TYPES[par_t];
+  par_n = Math.floor(Math.random() * (PAR_TYPES.length-1))+1;
 
   //initialize position
-  tetro_x = START_X;
-  tetro_y = START_Y;
+  par_x = START_X;
+  par_y = START_Y;
 }
 
 function drawBlock(x, y, c){
   let px = x * BLOCK_SIZE;
   let py = y * BLOCK_SIZE;
-  
-  //con.drawImage(blimage,
-    //c*BLOCK_SIZE, 0, BLOCK_SIZE,BLOCK_SIZE,
-    //px,py,           BLOCK_SIZE,BLOCK_SIZE );
-  con.fillStyle= TETRO_COLORS[c];
+
+  con.fillStyle= PAR_COLORS[c];
   con.fillRect(px, py,  BLOCK_SIZE, BLOCK_SIZE);
   con.strokeStyle = "#fff";
   con.strokeRect(px, py, BLOCK_SIZE, BLOCK_SIZE);
@@ -192,18 +189,18 @@ function drawAll(){
   let plus = 0;
   while(checkMove(0, plus+1)) plus++;
 
-//show tetromino
-  for (let y=0; y<TETRO_SIZE ; y++ ){
-    for (let x=0; x<TETRO_SIZE ; x++ ){
-      if ( tetro[y][x] ){
+//show parts
+  for (let y=0; y<PAR_SIZE ; y++ ){
+    for (let x=0; x<PAR_SIZE ; x++ ){
+      if ( par[y][x] ){
         //drop point
-        drawBlock(tetro_x+x, tetro_y+y+plus, 0);
-        //tetromino
-        drawBlock(tetro_x+x, tetro_y+y, tetro_t);
+        drawBlock(par_x+x, par_y+y+plus, 0);
+        //parts
+        drawBlock(par_x+x, par_y+y, par_t);
       }
-      //next tetromino
-      if(TETRO_TYPES[tetro_n][x][y]){
-        drawBlock(13+x, 4+y, tetro_n);
+      //next parts
+      if(PAR_TYPES[par_n][y][x]){
+        drawBlock(12+x, 4+y, par_n);
       }
     }
   }
@@ -246,14 +243,14 @@ function drawInfo() {
 
 
 
-//tetromino collision to the wall and other block
-function checkMove(mx, my, ntetro){
-  if(ntetro == undefined) ntetro = tetro;
-  for(let y=0; y<TETRO_SIZE ; y++){
-    for(let x=0; x<TETRO_SIZE ; x++){
-      if( ntetro[y][x]){
-        let nx = tetro_x + mx + x;
-        let ny = tetro_y + my + y;
+//parts collision to the wall and other block
+function checkMove(mx, my, npar){
+  if(npar == undefined) npar = par;
+  for(let y=0; y<PAR_SIZE ; y++){
+    for(let x=0; x<PAR_SIZE ; x++){
+      if( npar[y][x]){
+        let nx = par_x + mx + x;
+        let ny = par_y + my + y;
         if(ny < 0 || nx < 0 || ny >= FIELD_ROW || nx >= FIELD_COL || field[ny][nx] ) 
         return false;
       }
@@ -263,24 +260,24 @@ function checkMove(mx, my, ntetro){
 }
 
 
-//rotation of tetromino
+//rotation of parts
 function rotate(){
-  let ntetro = [];
-  for(let y=0; y<TETRO_SIZE ; y++){
-    ntetro[y]=[];
-    for(let x=0; x<TETRO_SIZE ; x++){
-      ntetro[y][x] = tetro[TETRO_SIZE-x-1][y];
+  let npar = [];
+  for(let y=0; y<PAR_SIZE ; y++){
+    npar[y]=[];
+    for(let x=0; x<PAR_SIZE ; x++){
+      npar[y][x] = par[PAR_SIZE-x-1][y];
     }
   }
-  return ntetro;
+  return npar;
 }
 
 //fix position at the bottom
-function fixTetro(){
-  for(let y=0; y<TETRO_SIZE ; y++){
-    for(let x=0; x<TETRO_SIZE ; x++){
-      if(tetro[y][x]){
-        field[tetro_y + y][tetro_x + x] = tetro_t;
+function fixPar(){
+  for(let y=0; y<PAR_SIZE ; y++){
+    for(let x=0; x<PAR_SIZE ; x++){
+      if(par[y][x]){
+        field[par_y + y][par_x + x] = par_t;
       }
     }
   }
@@ -309,21 +306,20 @@ function checkLine(){
   if(linec){
     lines += linec;
     score+=100*(2**(linec-1));
-    if(speed<GAME_SPEED-10)speed+=10;
   }
 }
 
-function dropTetro(){
+function dropPar(){
   if(over)return;
-  if(checkMove(0, 1))tetro_y++;
+  if(checkMove(0, 1))par_y++;
   else{
-    fixTetro();
+    fixPar();
     checkLine();
 
-    tetro_t = Math.floor(Math.random()*(TETRO_TYPES.length-1))+1;
-    tetro = TETRO_TYPES[tetro_t];
-    tetro_x = START_X;
-    tetro_y = START_Y;
+    par_t = Math.floor(Math.random()*(PAR_TYPES.length-1))+1;
+    par = PAR_TYPES[par_t];
+    par_x = START_X;
+    par_y = START_Y;
 
     if(!checkMove(0,0)){
       over = true;
@@ -335,13 +331,13 @@ function dropTetro(){
 document.onkeydown = function(e) {
   if(over)return;
   switch(e. keyCode ){
-    case 37: if(checkMove(-1, 0))tetro_x--; break; 
-    //ase 38: if(checkMove(0, -1))tetro_y--; break; 
-    case 39: if(checkMove(1, 0))tetro_x++; break; 
-    case 40: while(checkMove(0, 1))tetro_y++; break; 
-    case 32: let ntetro = rotate(); 
-    if(checkMove(0,0,ntetro)){
-      tetro = ntetro;  
+    case 37: if(checkMove(-1, 0))par_x--; break; 
+    //ase 38: if(checkMove(0, -1))par_y--; break; 
+    case 39: if(checkMove(1, 0))par_x++; break; 
+    case 40: while(checkMove(0, 1))par_y++; break; 
+    case 32: let npar = rotate(); 
+    if(checkMove(0,0,npar)){
+      par = npar;  
     } 
     break; 
   }
